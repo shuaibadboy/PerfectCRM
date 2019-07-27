@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div class="container" style="text-align: center; width: 20%">
+        <form class="form-signin" style="text-align: left" method="post">{% csrf_token %}
+            <h2 class="form-signin-heading ">Please sign in CRM</h2>
+            <label for="inputEmail" class="sr-only">Email address</label>
+            <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required="required" name="email">
+            <label for="inputPassword" class="sr-only">Password</label>
+            <input type="password" id="inputPassword" class="form-control" placeholder="Password" required="required" name="password">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" value="remember-me"> Remember me
+                </label>
+            </div>
+
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        </form>
+    {% for v in errors.values %}<span style="text-align: center; color: red">{{ v }}</span>{% endfor %}
+    </div>
+{% endblock %}

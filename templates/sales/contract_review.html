@@ -1,0 +1,96 @@
+{% extends 'index.html' %}
+{% load crm_tags %}
+{% block page-content%}
+    <h1>合同审核</h1>
+    <div class="col-lg-7">
+        <form class="form-horizontal">
+            <div class="form-group" >
+                <div class="col-lg-2">
+                    <h4 class="pull-right">客户信息</h4>
+                </div>
+            </div>
+            <div class="form-group" >
+                <label for="inputEmail3" class="col-sm-2 control-label">
+                    姓名
+                </label>
+                <div class="col-lg-8">
+                    <input type='text' class='form-control' value="{{ enrollment_obj.customer.name }}" disabled>
+                </div>
+            </div>
+            <div class="form-group" >
+                <label for="inputEmail3" class="col-sm-2 control-label">
+                    联系方式
+                </label>
+                <div class="col-lg-8">
+                    <input type='text' class='form-control' value="{{ enrollment_obj.customer.qq }}" disabled>
+                </div>
+            </div>
+            <div class="form-group" >
+                <label for="inputEmail3" class="col-sm-2 control-label">
+                    电话
+                </label>
+                <div class="col-lg-8">
+                    <input type='text' class='form-control' value="{{ enrollment_obj.customer.phone }}" disabled>
+                </div>
+            </div>
+            <div class="form-group" >
+                <label for="inputEmail3" class="col-sm-2 control-label">
+                    身份证号
+                </label>
+                <div class="col-lg-8">
+                    <input type='text' class='form-control' value="{{ enrollment_obj.customer.id_name }}" disabled>
+                </div>
+            </div>
+            <div class="form-group" >
+                <label for="inputEmail3" class="col-sm-2 control-label">
+                    邮箱
+                </label>
+                <div class="col-lg-8">
+                    <input type='text' class='form-control' value="{{ enrollment_obj.customer.email }}" disabled>
+                </div>
+            </div>
+            <div class="form-group" >
+                <label for="inputEmail3" class="col-sm-2 control-label">
+                    咨询课程
+                </label>
+                <div class="col-lg-8">
+                    <input type='text' class='form-control' value="{{ enrollment_obj.customer.consult_course }}" disabled>
+                </div>
+            </div>
+            <div class="form-group" >
+                <label for="inputEmail3" class="col-sm-2 control-label">
+                    咨询顾问
+                </label>
+                <div class="col-lg-8">
+                    <input type='text' class='form-control' value="{{ enrollment_obj.customer.consultant }}" disabled>
+                </div>
+            </div>
+            <hr>
+            <div class="form-group" >
+                <div class="col-lg-2">
+                    <h4 class="pull-right">报名信息</h4>
+                </div>
+            </div>
+            <div class="form-group" >
+                <label for="inputEmail3" class="col-sm-2 control-label">
+                    所报班级
+                </label>
+                <div class="col-lg-8">
+                    <input type='text' class='form-control' value="{{ enrollment_obj.enrolled_class }}" disabled>
+                </div>
+            </div>
+            <div class="form-group" >
+                <label for="inputEmail3" class="col-sm-2 control-label">
+                    课程顾问
+                </label>
+                <div class="col-lg-8">
+                    <input type='text' class='form-control' value="{{ enrollment_obj.consultant }}" disabled>
+                </div>
+            </div>
+            <div class="col-lg-11">
+                <a href="{% url 'enrollment_rejection' enrollment_obj.id %}"><input class="btn btn-danger" type="button" value="驳回合同"></a>
+                <a href="{% url 'payment' enrollment_obj.id %}"><input class="btn btn-success pull-right" type="button" value="审核通过"></a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

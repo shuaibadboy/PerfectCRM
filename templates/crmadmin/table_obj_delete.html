@@ -1,0 +1,23 @@
+{% extends 'crmadmin/table_index.html' %}
+{% load my_tags %}
+{% block extra-css-rseources %}
+{% endblock %}
+{% block container %}
+    <h2>{% render_table_name admin_table %}</h2>
+    {% if not admin_table.readonly_table %}
+    <h4 class="page-header text-danger">注意：以下与'{{ delete_obj }}'相关内容将被删除</h4>
+        {% display_all_related_objs delete_obj %}
+        <form class="form-horizontal" method="post">{% csrf_token %}
+        <div class="col-sm-5">
+            <button type="submit" class="btn btn-danger">确认删除</button>
+        </div>
+    {% else %}
+        {% for k,v in errors.items %}
+            <li style="color: red">{{ k }}:{{ v }}</li>
+        {% endfor %}
+    {% endif %}
+    <div class="col-sm-5">
+        <a href={% url 'table_obj_change' app_name table_name obj_id %}><button type="button" class="btn btn-info">返回</button></a>
+    </div>
+    </form>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends 'crmadmin/table_index.html' %}
+{% load my_tags %}
+{% block container %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'table_index' %}">Home</a></li>
+        <li><a href="{% url 'tables_of_app' app_name %}">{{ app_name }}</a></li>
+        <li class="active">{{ table_name }}</li>
+    </ol>
+    <div class="row">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title"><a href="{% url 'tables_of_app' app_name %}">{% render_table_name admin_table %}</a></h3>
+            </div>
+        </div>
+        <div class="panel-body">
+            {% if admin_table.search_fields %}
+                <form class="form-inline" style="display: inline-block">
+                  <div class="form-group" style="margin: 5px">
+                    <input type="text" class="form-control" placeholder="Search for:{% for i in admin_table.search_fields %}{{ i }} {% endfor %}" name="_q" value="{{ admin_table.search_conditions }}">
+                      {% for key,value in admin_table.filter_conditions.items %}
+                        <input type="hidden" name={{ key }} value={{ value }}>
+                      {% endfor %}
+                  <button type="submit" class="btn btn-success">Search</button>
+                  </div>
+                </form>
+            {% endif %}
+            {% if admin_table.list_filter %}
+                <form class="form-inline" style="display: inline-block">
+                    {% for filter_column in admin_table.list_filter %}
+                        <td>{% bulid_filter_ele filter_column admin_table %}</td>
+                    {% endfor %}
+                        <input type="hidden" name="_q" value={{ admin_table.search_conditions }}>
+                        <td><button type="submit" class="btn btn-success">Filter</button></td>
+                </form>
+            {% endif %}
+        {% if not admin_table.readonly_table %}
+            <a href="{% url 'table_obj_add' app_name table_name %}" class="panel-heading"><button class="btn btn-group"><span class="glyphicon glyphicon-plus" aria-hidden="true">添加</span></button></a>
+        {% endif %}
+            <form class="form-inline" method="post" id="action">{% csrf_token %}
+                <div class="form-group">动作：
+                    <select id="action_list" class="form-control input-sm" style="width: auto" name="action">{% ger_action_select_option admin_table %}</select>
+                    <button type="submit" class="btn btn-info" onclick="return ActionSubmit()">执行</button>
+                </div>
+            </form>
+
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th style="width: 10px"><input type="checkbox" onchange="chose_all_objs_id(this)" ></th>
+                    {% if admin_table.list_display %}
+                    {% for column in admin_table.list_display %}
+                    <th>
+                    {% judge_column_in_fields column admin_table as judgment_results %}
+                    {% if judgment_results %}
+                        <a href="?_o={% get_list_index admin_table column %}&_q={{ admin_table.search_conditions }}{% get_filtered_args admin_table %}">{% ger_verbose_name column admin_table %}</a>
+                        {% render_sorted_arrow admin_table column %}
+                    {% else %}
+                        <a href="javascript:void(0)">{% ger_verbose_name column admin_table %}</a>
+                    {% endif %}
+                    </th>
+                    {% endfor %}
+                    {% else %}
+                        <th>{% get_model_name admin_table %}</th>
+                    {% endif %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for query_set in query_sets %}
+                    <tr><td  style="width: 10px"><input type="checkbox" value="{{ query_set.id }}" tag ='obj_checkbox' name="check_box_list"></td>
+                    {% bulid_table_row request query_set admin_table %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        <div class="panel-title">合计{{ query_sets.paginator.count }}条数据，共{{ query_sets.paginator.num_pages }}页</div>
+        {% get_web_pagination query_sets admin_table %}
+        </div>
+    </div>
+    <script>
+        function chose_all_objs_id(ele) {
+            let is_choose = $(ele).prop('checked');
+            $('input[tag="obj_checkbox"]').each(
+                function (){
+                    $(this).prop('checked',is_choose)
+                });
+        }
+        function ActionSubmit() {
+            let select_id=[];
+            let select_action=$('#action_list').val();
+            $('input[tag="obj_checkbox"]:checked').each(
+                function () {
+                    select_id.push($(this).val())
+                }
+            );
+            if (select_id.length==0){
+                alert('请选择需要操作的对象！');
+                return false
+            }
+            else if (select_action.length==0){
+                alert('请选择需要执行的动作！');
+                return false
+            }
+            else {
+                let selected_id_ele = '<input type="hidden" value= "'+ select_id.toString() +'" name="selected_id_list">';
+                $('#action').append(selected_id_ele);
+                return true
+            }
+        }
+    </script>
+{% endblock %}

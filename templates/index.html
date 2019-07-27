@@ -1,0 +1,76 @@
+ {% extends 'base.html' %}
+{% load my_tags %}
+ {% block body %}
+     <body>
+     <nav class="navbar navbar-inverse navbar-fixed-top">
+         <div class="container-fluid">
+             <div class="navbar-header">
+                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                     <span class="sr-only">Toggle navigation</span>
+                     <span class="icon-bar"></span>
+                     <span class="icon-bar"></span>
+                     <span class="icon-bar"></span>
+                 </button>
+                 <a class="navbar-brand" href="#">PerfectCRM</a>
+             </div>
+             <div id="navbar" class="navbar-collapse collapse">
+                 <ul class="nav navbar-nav navbar-right">
+                     <li class="dropdown">
+                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ request.user.name }} <span class="caret"></span></a>
+                         <ul class="dropdown-menu">
+                             <li class="dropdown-header">欢迎使用</li>
+                             <li><a href="#">我的账户</a></li>
+                             <li><a href="/crm-admin/crm/userprofile/{{ request.user.id }}/change/password/">修改密码</a></li>
+                             <li><a href="{% url 'acc_logout' %}">注销</a></li>
+                         </ul>
+                     </li>
+                 </ul>
+             </div>
+         </div>
+     </nav>
+     <div class="container-fluid">
+         <div class="row">
+             <div class="col-sm-3 col-md-2 sidebar">
+                 <ul class="nav nav-sidebar">
+                     {% for role in request.user.roles.select_related %}
+                         {% for menus in role.menu.select_related %}
+                             <li class=""><a href="{% if menus.url_type %}{{ menus.url_name }}{% else %}{% url menus.url_name %}{% endif %}">{{ menus.menu_name }} <span class="sr-only">(current)</span></a></li>
+                         {% endfor %}
+                     {% endfor %}
+                 </ul>
+             </div>
+             <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                 {% block page-content %}
+                     <h1>欢迎使用 PerfectCRM 系统</h1>
+                    <h1 class="page-header">Dashboard</h1>
+                    <div class="row placeholders">
+                        <div class="col-xs-6 col-sm-3 placeholder">
+                        <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+                        <h4>Label</h4>
+                        <span class="text-muted">Something else</span>
+                        </div>
+                        <div class="col-xs-6 col-sm-3 placeholder">
+                            <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+                            <h4>Label</h4>
+                            <span class="text-muted">Something else</span>
+                        </div>
+                        <div class="col-xs-6 col-sm-3 placeholder">
+                            <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+                            <h4>Label</h4>
+                            <span class="text-muted">Something else</span>
+                        </div>
+                        <div class="col-xs-6 col-sm-3 placeholder">
+                            <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+                            <h4>Label</h4>
+                            <span class="text-muted">Something else</span>
+                        </div>
+                    </div>
+                    <h2 class="sub-header">Section title</h2>
+                    <div class="table-responsive">123
+                    </div>
+                 {% endblock %}
+             </div>
+            </div>
+        </div>
+     </body>
+ {% endblock %}

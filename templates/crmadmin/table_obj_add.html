@@ -1,0 +1,75 @@
+{% extends 'crmadmin/table_index.html' %}
+{% load my_tags %}
+{% load crm_tags %}
+{% block extra-css-rseources %}
+    <style>
+    .filter-select-box{
+        height: 250px!important;
+        width: 100%;
+        border-radius: 5px;
+    }
+    </style>
+{% endblock %}
+{% block container %}
+<h1>
+增加——{% render_table_name admin_table %}
+</h1>
+    <div class="col-lg-8">
+    <form method="post" class="form-horizontal" onsubmit="return selected_all_chose()">
+        {% csrf_token %}
+        {% for field in modelform %}
+        <div class="form-group" >
+            <label for="inputEmail3" class="col-sm-2 control-label"{% if not field.field.required %} style="font-weight: normal" {% endif %}>
+                {{ field.label }}
+            </label>
+            <div class="col-sm-8">
+                {% if field.name in admin_table.filter_horizontal %}
+                                <div class="col-sm-4">
+                    <div>未选：</div>
+                    <select multiple="multiple" class="filter-select-box" id="id_{{ field.name }}_from" name="{{ field.name }}_old">
+                        {% get_m2m_obj admin_table field modelform as m2m_option %}
+                        {% for op in m2m_option %}
+                        <option value="{{ op.id }}" ondblclick="MoveElementTo(this, 'id_{{ field.name }}_to')">{{ op }}</option>
+                        {% endfor %}
+                    </select>
+                    </div>
+                    <div class="col-sm-1" style="line-height: 250px">
+                        <span class="glyphicon glyphicon-transfer" aria-hidden="true"></span>
+                    </div>
+                    <div class="col-sm-4">
+                    <div>已选：</div>
+                        {{ modelform.instance.field.all }}
+                    <select multiple="multiple" class="filter-select-box"  id="id_{{ field.name }}_to" tag="chosen_list" name="{{ field.name }}">
+                        {% get_m2m_select_obj modelform field as select_options %}
+                        {% for op in select_options %}
+                        <option value="{{ op.id }}" ondblclick="MoveElementTo(this, 'id_{{ field.name }}_from')">{{ op }}</option>
+                        {% endfor %}
+                    </select>
+                    </div>
+                {% else %}
+                    {{ field }}<span style="color: gray"></span><span style="color: red">{{ field.errors }}</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    <div style="color: red">{% __all__errors modelform.errors as judge_errors%}{% if judge_errors %}{{ judge_errors }}{% endif %}</div>
+    <div class="col-sm-10">
+        <input type="submit" class="btn btn-success pull-right" value="Save">
+    </div>
+
+    </form>
+    </div>
+
+    <script>
+    function MoveElementTo(ele, to_parent_ele){
+        var parent_id = $(ele).parent().attr('id');
+        option_ele = '<option value="'+$(ele).val()+'" ondblclick="MoveElementTo(this,\'' + parent_id +'\')">'+$(ele).text()+'</option>';
+        $(ele).remove();
+        $('#' + to_parent_ele).append(option_ele);
+    }
+    function selected_all_chose() {
+        $("select[tag='chosen_list'] option").prop("selected",true);
+        return true;
+    }
+    </script>
+{% endblock %}

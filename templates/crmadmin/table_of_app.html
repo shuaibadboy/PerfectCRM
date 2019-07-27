@@ -1,0 +1,32 @@
+{% extends 'crmadmin/table_index.html' %}
+{% load my_tags %}
+{% block container %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'table_index' %}">Home</a></li>
+        <li>{{ app_name }}</li>
+    </ol>
+    <div class="row">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title"><a href="{% url 'tables_of_app' app_name %}">{{ app_name }}</a></h3>
+            </div>
+        </div>
+        <div class="panel-body">
+                <table class="table table-hover">
+                <thead>
+                <tr>
+                </tr>
+                </thead>
+                <tbody>
+                {% for table_name in admin_app.keys %}
+                    <tr>
+                        <td><a href="{% url 'table_objs' app_name table_name %}">{% app_return_table_name admin_app table_name %}</a></td>
+                        <td><a href="{% url 'table_obj_add' app_name table_name %}">增加</a></td>
+                        <td><a href="{% url 'table_objs' app_name table_name %}">修改</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

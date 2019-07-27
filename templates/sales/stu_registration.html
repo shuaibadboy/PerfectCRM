@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load crm_tags %}
+{% block body%}
+    <div class="container">
+        <div class="panel panel-success">
+            <div class="panel-heading">学员报名</div>
+        {% if not msg.status %}
+            <div class="panel-body">
+                <form method="post" class="form-horizontal" onsubmit="return check_contract()">{% csrf_token %}
+                    {% for field in modelform %}
+                        <div class="form-group" >
+                            <label class="col-sm-2 control-label">
+                                {{ field.label }}
+                            </label>
+                            <div class="col-lg-9">
+                                {{ field }}<span style="color: gray">{{ field.help_text|safe }}</span><span style="color: red">{{ field.errors.as_text }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <hr>
+                    <div class="form-group" >
+                        <label class="col-sm-2 control-label">
+                            所报班级
+                        </label>
+                        <div class="col-lg-9">
+                            <input type="text" name="enrolled_class" maxlength="64" class="form-control" value="{{ enrollment_obj.enrolled_class }}" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group" >
+                        <label class="col-sm-2 control-label">
+                            课程价格
+                        </label>
+                        <div class="col-lg-9">
+                            <input type="number" name="price" maxlength="64" class="form-control" value="{{ enrollment_obj.enrolled_class.course.price }}" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group" >
+                        <label class="col-sm-2 control-label">
+                            开课时间
+                        </label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control" value="{{ enrollment_obj.enrolled_class.start_date }}" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group" >
+                        <label class="col-sm-2 control-label">
+                            合同内容
+                        </label>
+                        <div class="col-lg-9">
+                            <pre class="form-control" width="50" style="width: 100%; height:500px; overflow: auto " disabled>{{ enrollment_obj.enrolled_class.contract.template }}</pre>
+                        </div>
+                    </div>
+                    <div class="form-group" >
+                        <div class="col-lg-7 ">
+                            <input class="pull-right" type="checkbox" name="contract_agreed">
+                        </div>
+                        <div class="col-lg-4 pull-left" style="margin-left: -20px">我已认真阅读完协议并接受所有条款</div>
+                    </div>
+                    <div class="form-group" >
+                        <div class="col-lg-11" style="margin-top: 5px">
+                            <input class="btn btn-info pull-right" type="submit" value="确认" style="width: 50px">
+                        </div>
+                    </div>
+                </form>
+            <hr>
+                <form id="filedropzone" method="post" action="{{ request.path }}" class="dropzone dz-clickable" >{% csrf_token %}
+                    <div class="dz-default dz-message">
+                        <div class="dz-icon icon-wrap icon-circle icon-wrap-md">
+                            <i class="fa fa-cloud-upload fa-3x"></i>
+                        </div>
+                        <div>
+                            <p class="dz-text" >把身份证正反面照片拖放到这里</p>
+                            <p class="text-muted">最多可上传2张照片</p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        {% else %}
+            <div class="panel-body">
+            <h1>{{ msg.message }}</h1>
+            </div>
+        {% endif %}
+        </div>
+    </div>
+{% endblock %}
+{% block bottom-js %}
+    <script>
+    $(document).ready(function () {
+         Dropzone.options.filedropzone = {
+             url:"{{ request.path }}",
+             paramName: "file", // The name that will be used to transfer the file
+             maxFilesize: 1024, // MB,
+             addRemoveLinks:true,
+             acceptedFiles: ".jpg,.jpeg,.doc,.docx,.ppt,.pptx,.txt,.avi,.pdf,.mp3,.zip",
+             maxFiles:5,
+             uploadMultiple:true,
+         };
+         Dropzone.autoDiscover = false;
+         myDropzone = new Dropzone("#filedropzone");
+         myDropzone.on("addedfile", function(file) {
+             /* Maybe display some more file information on your page */
+         });
+         myDropzone.on("success", function(file,response) {
+             /* Maybe display some more file information on your page */
+             console.log('filex upload done...', response);
+         });
+         myDropzone.on('error', function (file, response) {
+             //文件上传失败后的操作
+             });
+    });
+    function check_contract() {
+        if (myDropzone.files.length!=2){
+            alert('身份证所需照片数量为2张');
+            return false}
+        if ($('form :checkbox').prop('checked')){
+            $('form :input[disabled]').each(function () {
+                $(this).removeAttr('disabled')
+            });
+            return true
+        }
+        else {
+            alert('阅读合同并同意条款后才能提交表单');
+            return false
+        }
+    }
+    </script>
+{% endblock %}

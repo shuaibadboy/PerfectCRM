@@ -1,0 +1,36 @@
+{% extends 'index.html' %}
+{% load crm_tags %}
+{% block page-content%}
+    <h1>报名表</h1>
+    <div class="col-lg-7">
+    {% if not msg.create_status and not enrollment_obj.contract_agreed %}
+        <form method="post" class="form-horizontal">{% csrf_token %}
+            <div class="form-group" >
+                <label for="inputEmail3" class="col-sm-2 control-label">
+                    客户
+                </label>
+                <div class="col-lg-8">
+                    <input class="form-control" type="text" value="{{ customer_obj }}" disabled>
+                </div>
+            </div>
+            {% for field in modelform %}
+                <div class="form-group" >
+                    <label for="inputEmail3" class="col-sm-2 control-label">
+                        {{ field.label }}
+                    </label>
+                    <div class="col-lg-8">
+                        {{ field }}<span style="color: gray">{{ field.help_text|safe }}</span><span style="color: red">{{ field.errors.as_text }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+            <div style="color: red">{% __all__errors modelform.errors as judge_errors%}{% if judge_errors %}{{ judge_errors }}{% endif %}</div>
+            <input class="btn btn-success pull-right" type="submit" value="下一步">
+        </form>
+    {% elif msg.create_status and not enrollment_obj.contract_agreed and not enrollment_obj.contract_approved %}
+{#        客户尚未同意#}
+        <h3>{{ msg.message|safe }}</h3>
+    {% elif msg.create_status and enrollment_obj.contract_agreed and enrollment_obj.contract_approved %}
+        <h1>该学员已成功报名:{{ enrollment_obj.enrolled_class }}</h1>
+    {% endif %}
+    </div>
+{% endblock %}
